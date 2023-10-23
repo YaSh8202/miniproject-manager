@@ -1,48 +1,35 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+datasource db {
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
+}
 
 generator client {
     provider = "prisma-client-js"
 }
 
-datasource db {
-    provider = "sqlite"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+generator dbml {
+  provider = "prisma-dbml-generator"
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
-// Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
     userId            String
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.Text
+    id_token          String? @db.Text
     session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
@@ -51,18 +38,54 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model User {
     id            String    @id @default(cuid())
     name          String?
     email         String?   @unique
+    role          Role      @default(STUDENT)
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+
+    department    Department?  @relation(fields: [departmentId], references: [id])
+    departmentId  String?
+    miniProject   MiniProject? @relation(fields: [miniProjectId], references: [id])
+    miniProjectId String?
+    team          Team?        @relation(fields: [teamId], references: [id])
+    teamId        String?
+    batch         Batch?       @relation(fields: [batchId], references: [id])
+    batchId       String?
+
+    mentorAssignedToTeam Team[]          @relation("MentorAssignedToTeam")
+    MentorRanking        MentorRanking[]
+
+    // mentor   Mentor? @relation(fields: [mentorId], references: [id])
+    // mentorId String? @unique
+
+    @@index([departmentId])
+    @@index([miniProjectId])
+    @@index([teamId])
+    @@index([batchId])
+    // @@index([mentorId])
 }
+
+// model Mentor {
+//     id String @id @default(cuid())
+
+//     user User?
+//     mentorAssignedToTeam Team[] @relation("MentorAssignedToTeam")
+//     MentorRanking        MentorRanking[]
+//     department           Department? @relation(fields: [departmentId], references: [id])
+//     departmentId         String?
+//     miniProject          MiniProject? @relation(fields: [miniProjectId], references: [id])
+//     miniProjectId        String?
+
+// }
 
 model VerificationToken {
     identifier String
@@ -70,4 +93,87 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Department {
+    id      String @id @default(cuid())
+    name    String
+    code    String @unique
+    mentors User[]
+
+    batches Batch[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model MiniProject {
+    id          String  @id @default(cuid())
+    name        String
+    description String?
+
+    batch Batch?
+
+    mentors User[]
+    teams   Team[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Batch {
+    id   String @id @default(cuid())
+    year Int
+
+    department   Department @relation(fields: [departmentId], references: [id])
+    departmentId String
+
+    miniProject   MiniProject? @relation(fields: [miniProjectId], references: [id])
+    miniProjectId String?      @unique
+
+    students    User[]
+    num_stuents Int?
+
+    @@index([departmentId])
+    @@index([miniProjectId])
+}
+
+model Team {
+    id            String      @id @default(cuid())
+    name          String?
+    miniProject   MiniProject @relation(fields: [miniProjectId], references: [id])
+    miniProjectId String
+    members       User[]
+
+    mentorList MentorRanking[]
+
+    assignedMentor   User?   @relation("MentorAssignedToTeam", fields: [assignedMentorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    assignedMentorId String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([miniProjectId])
+    @@index([assignedMentorId])
+}
+
+model MentorRanking {
+    id            String @id @default(cuid())
+    mentorRanking Int
+    mentor        User   @relation(fields: [mentorId], references: [id])
+    mentorId      String @unique
+
+    team   Team   @relation(fields: [teamId], references: [id])
+    teamId String @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([teamId])
+}
+
+enum Role {
+    ADMIN
+    MENTOR
+    STUDENT
 }
