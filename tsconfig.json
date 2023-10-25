@@ -30,6 +30,6 @@
     "**/*.cjs",
     "**/*.mjs",
     ".next/types/**/*.ts"
-  ],
+, "prisma/test.js"  ],
   "exclude": ["node_modules"]
 }

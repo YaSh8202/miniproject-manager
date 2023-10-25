@@ -9,7 +9,7 @@ generator client {
 }
 
 generator dbml {
-  provider = "prisma-dbml-generator"
+    provider = "prisma-dbml-generator"
 }
 
 model Account {
@@ -52,40 +52,41 @@ model User {
     accounts      Account[]
     sessions      Session[]
 
-    department    Department?  @relation(fields: [departmentId], references: [id])
-    departmentId  String?
-    miniProject   MiniProject? @relation(fields: [miniProjectId], references: [id])
-    miniProjectId String?
-    team          Team?        @relation(fields: [teamId], references: [id])
-    teamId        String?
-    batch         Batch?       @relation(fields: [batchId], references: [id])
-    batchId       String?
+    department   Department? @relation(fields: [departmentId], references: [id])
+    departmentId String?
 
-    mentorAssignedToTeam Team[]          @relation("MentorAssignedToTeam")
-    MentorRanking        MentorRanking[]
-
-    // mentor   Mentor? @relation(fields: [mentorId], references: [id])
-    // mentorId String? @unique
+    mentor  Mentor?
+    student Student?
 
     @@index([departmentId])
-    @@index([miniProjectId])
-    @@index([teamId])
-    @@index([batchId])
-    // @@index([mentorId])
 }
 
-// model Mentor {
-//     id String @id @default(cuid())
+model Mentor {
+    id            String          @id @default(cuid())
+    user          User?           @relation(fields: [userId], references: [id])
+    userId        String?         @unique
+    miniProject   MiniProject[]
+    coordinator   Batch[]
+    mentorRanking MentorRanking[]
+    assignedTeam  Team[]          @relation("MentorAssignedToTeam")
+}
 
-//     user User?
-//     mentorAssignedToTeam Team[] @relation("MentorAssignedToTeam")
-//     MentorRanking        MentorRanking[]
-//     department           Department? @relation(fields: [departmentId], references: [id])
-//     departmentId         String?
-//     miniProject          MiniProject? @relation(fields: [miniProjectId], references: [id])
-//     miniProjectId        String?
+model Student {
+    id            String       @id @default(cuid())
+    batch         Batch?       @relation(fields: [batchId], references: [id])
+    batchId       String?
+    team          Team?        @relation(fields: [teamId], references: [id])
+    teamId        String?
+    miniProject   MiniProject? @relation(fields: [miniProjectId], references: [id])
+    miniProjectId String?
 
-// }
+    user   User?   @relation(fields: [userId], references: [id])
+    userId String? @unique
+
+    @@index([batchId])
+    @@index([teamId])
+    @@index([miniProjectId])
+}
 
 model VerificationToken {
     identifier String
@@ -114,8 +115,9 @@ model MiniProject {
 
     batch Batch?
 
-    mentors User[]
-    teams   Team[]
+    mentors  Mentor[]
+    stduents Student[]
+    teams    Team[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -131,11 +133,14 @@ model Batch {
     miniProject   MiniProject? @relation(fields: [miniProjectId], references: [id])
     miniProjectId String?      @unique
 
-    students    User[]
-    num_stuents Int?
+    students      Student[]
+    num_stuents   Int?
+    coordinator   Mentor?   @relation(fields: [coordinatorId], references: [id])
+    coordinatorId String?
 
     @@index([departmentId])
     @@index([miniProjectId])
+    @@index([coordinatorId])
 }
 
 model Team {
@@ -143,11 +148,11 @@ model Team {
     name          String?
     miniProject   MiniProject @relation(fields: [miniProjectId], references: [id])
     miniProjectId String
-    members       User[]
+    members       Student[]
 
     mentorList MentorRanking[]
 
-    assignedMentor   User?   @relation("MentorAssignedToTeam", fields: [assignedMentorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    assignedMentor   Mentor? @relation("MentorAssignedToTeam", fields: [assignedMentorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     assignedMentorId String?
 
     createdAt DateTime @default(now())
@@ -160,7 +165,7 @@ model Team {
 model MentorRanking {
     id            String @id @default(cuid())
     mentorRanking Int
-    mentor        User   @relation(fields: [mentorId], references: [id])
+    mentor        Mentor @relation(fields: [mentorId], references: [id])
     mentorId      String @unique
 
     team   Team   @relation(fields: [teamId], references: [id])
