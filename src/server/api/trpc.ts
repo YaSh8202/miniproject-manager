@@ -14,6 +14,7 @@ import { ZodError } from "zod";
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
+import { Role } from "@prisma/client";
 
 /**
  * 1. CONTEXT
@@ -119,6 +120,24 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+const enforceUserIsMentor = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  if (
+    ctx.session.user.role !== Role.MENTOR &&
+    ctx.session.user.role !== Role.ADMIN
+  ) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -127,4 +146,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/procedures
  */
+
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const mentorProtectedProcedure = t.procedure.use(enforceUserIsMentor);

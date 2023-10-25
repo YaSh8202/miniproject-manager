@@ -24,8 +24,12 @@ function AvatarDropdownMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         {/* <Button variant={"outline"} className="p-0 cursor-pointer" asChild > */}
-        <Avatar>
-          <AvatarImage src={session.user?.image} alt="user-avatar" />
+        <Avatar className="h-8 w-8"  >
+          <AvatarImage
+            src={session.user?.image ?? undefined}
+            alt="user-avatar"
+            
+          />
           <AvatarFallback>
             {session.user?.name?.toUpperCase()[0] +
               `${
@@ -42,6 +46,9 @@ function AvatarDropdownMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>
+            {session.user.name}{" "}({session.user.role})
+          </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer " onClick={logoutHandler}>
             Logout
           </DropdownMenuItem>

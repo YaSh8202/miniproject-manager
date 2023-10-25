@@ -8,7 +8,7 @@ function Navbar() {
     <div className="border-b">
       <div className="mx-auto flex h-16 items-center  px-4">
         <Link href="/" className="text-2xl font-bold">
-          MPM
+          Mini Project
         </Link>
         <div className="ml-auto flex items-center space-x-4">
           <ModeToggle />
