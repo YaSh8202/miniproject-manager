@@ -9,6 +9,10 @@ import GoogleProvider from "next-auth/providers/google";
 import { env } from "@/env.mjs";
 import { db } from "@/server/db";
 import { type Role } from "@prisma/client";
+import { type AdapterUser } from "next-auth/adapters";
+import { extractCollegeInfo } from "@/lib/utils";
+
+
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -49,22 +53,53 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: {
     ...PrismaAdapter(db),
-    // createUser: async (user) => {
-    //   const createdUser = await db.user.create({
-    //     data: user,
-    //   });
+    createUser: async (user) => {
+      const createdUser = await db.user.create({
+        data: user,
+      });
 
-      
+      console.log("createdUser", createdUser);
 
-    //   return {
-    //     id: createdUser.id,
-    //     name: createdUser.name,
-    //     email: createdUser.email,
-    //     image: createdUser.image,
-    //     role: createdUser.role,
-    //     emailVerified: createdUser.emailVerified,
-    //   } as AdapterUser;
-    // },
+      const email = createdUser.email;
+      const studentInfo = extractCollegeInfo(email);
+      console.log("studentInfo", studentInfo);
+      if (studentInfo) {
+        const { batchYear, departmentCode, entryNo } = studentInfo;
+
+        const department = await db.department.findUnique({
+          where: {
+            code: departmentCode,
+          },
+          select: {
+            batches: {
+              where: {
+                year: parseInt("20" + batchYear),
+              },
+            },
+          },
+        });
+
+        const student = await db.student.create({
+          data: {
+            user: {
+              connect: {
+                id: createdUser.id,
+              },
+            },
+            batch: {
+              connect: {
+                id: department?.batches[0]?.id,
+              },
+            },
+            entryNo: batchYear + departmentCode + entryNo,
+          },
+        });
+
+        console.log("student",student)
+      }
+
+      return createdUser as AdapterUser;
+    },
   },
   providers: [
     GoogleProvider({
