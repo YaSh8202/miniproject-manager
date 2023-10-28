@@ -6,7 +6,7 @@ import {
 } from "@/server/api/trpc";
 
 export const batchRouter = createTRPCRouter({
-  getBatch: protectedProcedure.query(async ({ ctx }) => {
+  getStudentBatch: protectedProcedure.query(async ({ ctx }) => {
     const student = await ctx.db.student.findUniqueOrThrow({
       where: {
         userId: ctx.session.user.id,
@@ -29,5 +29,15 @@ export const batchRouter = createTRPCRouter({
     }
 
     return student.batch;
+  }),
+
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const batches = await ctx.db.batch.findMany({
+      include: {
+        department: true,
+      },
+    });
+
+    return batches;
   }),
 });

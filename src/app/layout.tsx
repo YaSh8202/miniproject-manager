@@ -4,8 +4,9 @@ import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { TRPCReactProvider } from "@/trpc/react";
-import SessionProvider from '@/components/providers/session-provider'
+import SessionProvider from "@/components/providers/session-provider";
 import { getSession } from "next-auth/react";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,7 +29,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <TRPCReactProvider headers={headers()}>
-          <SessionProvider session={session} >
+          <SessionProvider session={session}>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
@@ -36,6 +37,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               {children}
+              <Toaster />
             </ThemeProvider>
           </SessionProvider>
         </TRPCReactProvider>

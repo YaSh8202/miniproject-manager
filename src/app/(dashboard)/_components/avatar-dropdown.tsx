@@ -39,7 +39,7 @@ function AvatarDropdownMenu() {
         </Avatar>
         {/* </Button> */}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-72 ">
+      <DropdownMenuContent className="w-72 shadow shadow-muted ">
         <DropdownMenuGroup className="flex flex-row items-center gap-4 px-6 py-4">
           <Avatar className="h-12 w-12">
             <AvatarImage
