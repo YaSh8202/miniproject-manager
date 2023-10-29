@@ -1,13 +1,20 @@
-import Navbar from "./_components/navbar";
+import { getServerAuthSession } from "@/server/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
   // const hello = await api.post.hello.query({ text: "from tRPC" });
-  
+  const session = await getServerAuthSession();
+
+  if (!session) {
+    redirect("/sign-in");
+  }
 
   return (
-    <main className="">
-      Dashboard
+    <main className="flex flex-1 flex-row">
+      <div className="w-[300px] border-r border-border"></div>
+      <div className="flex flex-1 flex-col ">
+        
+      </div>
     </main>
   );
 }
-
