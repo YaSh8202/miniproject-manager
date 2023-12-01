@@ -20,10 +20,10 @@ function AvatarDropdownMenu() {
   if (!session?.user) return null;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu  >
       <DropdownMenuTrigger asChild>
         {/* <Button variant={"outline"} className="p-0 cursor-pointer" asChild > */}
-        <Avatar className="h-8 w-8  ">
+        <Avatar className="h-8 w-8 cursor-pointer ">
           <AvatarImage
             src={session.user?.image ?? undefined}
             alt="user-avatar"

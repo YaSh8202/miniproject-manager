@@ -8,7 +8,7 @@ export default function DashboardLayout({
   // const hello = await api.post.hello.query({ text: "from tRPC" });
 
   return (
-    <div className="flex min-h-screen flex-col  ">
+    <div className="flex h-screen w-screen flex-col overflow-hidden  ">
       <Navbar />
       {children}
     </div>

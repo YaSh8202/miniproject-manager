@@ -1,0 +1,17 @@
+# The code you provided is a Docker Compose file. It is used to define and manage multiple Docker containers as a single application.
+version: "3.9"
+services:
+  miniproject-manager-db:
+    image: postgres
+    restart: always
+    container_name: miniproject-manager-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: miniproject
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+
+volumes:
+  postgres:

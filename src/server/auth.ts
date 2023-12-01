@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
       const studentInfo = extractCollegeInfo(email);
       console.log("studentInfo", studentInfo);
       if (studentInfo) {
-        const { batchYear, departmentCode, entryNo } = studentInfo;
+        const { batchYear, degree, departmentCode, entryNo } = studentInfo;
 
         const department = await db.department.findUnique({
           where: {
@@ -78,7 +78,6 @@ export const authOptions: NextAuthOptions = {
             },
           },
         });
-
         const student = await db.student.create({
           data: {
             user: {

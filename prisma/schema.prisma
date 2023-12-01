@@ -1,6 +1,6 @@
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
     // directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connectio
 }
 
@@ -40,14 +40,14 @@ model Session {
 }
 
 model User {
-    id                   String        @id @default(cuid())
-    name                 String?
-    email                String?       @unique
-    role                 Role          @default(STUDENT)
-    emailVerified        DateTime?
-    image                String?
-    accounts             Account[]
-    sessions             Session[]
+    id                  String        @id @default(cuid())
+    name                String?
+    email               String?       @unique
+    role                Role          @default(STUDENT)
+    emailVerified       DateTime?
+    image               String?
+    accounts            Account[]
+    sessions            Session[]
     createdMiniProjects MiniProject[]
 
     mentor  Mentor?
@@ -59,7 +59,6 @@ model Mentor {
     user          User?           @relation(fields: [userId], references: [id])
     userId        String?         @unique
     coordinator   Batch[]
-    mentorRanking MentorRanking[]
     assignedTeam  Team[]          @relation("MentorAssignedToTeam")
 
     department   Department? @relation(fields: [departmentId], references: [id])
@@ -97,7 +96,6 @@ model Department {
     allMentorsMail String[]
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
-    
 }
 
 model MiniProject {
@@ -141,25 +139,13 @@ model Team {
     miniProjectId String
     members       Student[]
 
-    mentorList       MentorRanking[]
+    mentorList       String[]
     assignedMentor   Mentor?         @relation("MentorAssignedToTeam", fields: [assignedMentorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     assignedMentorId String?
     createdAt        DateTime        @default(now())
     updatedAt        DateTime        @updatedAt
 }
 
-model MentorRanking {
-    id            String @id @default(cuid())
-    mentorRanking Int
-    mentor        Mentor @relation(fields: [mentorId], references: [id])
-    mentorId      String @unique
-
-    team   Team   @relation(fields: [teamId], references: [id])
-    teamId String @unique
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
 
 enum Role {
     ADMIN
