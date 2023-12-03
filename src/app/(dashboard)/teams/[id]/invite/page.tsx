@@ -10,9 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import StudentMultiSelect from "@/components/ui/multi-select";
-import React from "react";
+import React, { useMemo } from "react";
 import CurrentTeam from "./_components/current-team";
-import { Link, Loader, Loader2 } from "lucide-react";
+import { Link, Loader2 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { api } from "@/trpc/react";
 import { useToast } from "@/components/ui/use-toast";
@@ -24,15 +24,27 @@ type Student = {
 
 const InviteTeam = ({ params }: { params: { id: string } }) => {
   const [selected, setSelected] = React.useState<Student[]>([]);
+  const { data: students, isLoading: isLoadingStudents } =
+    api.batch.getStudents.useQuery();
+
+  const studentOptions = useMemo(() => {
+    if (!students) return [];
+
+    return students?.map((student) => ({
+      mailId: student.mail!,
+      available: !student.teamId,
+    })) satisfies Student[];
+  }, [students]);
+
   const { data: team, isLoading } = api.team.get.useQuery({
     id: params.id,
   });
   const { toast } = useToast();
 
-  if (isLoading) {
+  if (isLoading || isLoadingStudents) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center">
-        <Loader2 className="animate-spin w-16 h-16 " />
+        <Loader2 className="h-16 w-16 animate-spin " />
       </div>
     );
   }
@@ -55,15 +67,18 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
         </CardHeader>
         <CardContent className="flex flex-col">
           <CurrentTeam />
-
-          <StudentMultiSelect selected={selected} setSelected={setSelected} />
+          <StudentMultiSelect
+            options={studentOptions}
+            selected={selected}
+            setSelected={setSelected}
+          />
           <Button
             onClick={async () => {
               await navigator.clipboard.writeText(inviteLink);
               toast({
                 title: "Copied to clipboard",
                 description: "The link has been copied to your clipboard",
-                duration: 2000
+                duration: 2000,
               });
             }}
             size={"sm"}

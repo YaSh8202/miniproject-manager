@@ -13,31 +13,15 @@ type Student = {
   available: boolean;
 };
 
-const STUDENTS = [
-  {
-    mailId: "20bcs001@smvdu.ac.in",
-    available: true,
-  },
-  {
-    mailId: "20bcs002@smvdu.ac.in",
-    available: true,
-  },
-  {
-    mailId: "20bcs003@smvdu.ac.in",
-    available: true,
-  },
-  {
-    mailId: "20bcs004@smvdu.ac.in",
-    available: false,
-  },
-] satisfies Student[];
 
 export default function StudentMultiSelect({
   selected,
   setSelected,
+  options,
 }: {
   selected: Student[];
   setSelected: React.Dispatch<React.SetStateAction<Student[]>>;
+  options: Student[];
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -73,7 +57,7 @@ export default function StudentMultiSelect({
     [setSelected],
   );
 
-  const selectables = STUDENTS.filter((student) => !selected.includes(student));
+  const selectables = options.filter((student) => !selected.includes(student));
 
   return (
     <Command

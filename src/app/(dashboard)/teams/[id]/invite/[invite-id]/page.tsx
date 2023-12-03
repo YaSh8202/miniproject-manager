@@ -51,6 +51,7 @@ const InviteMember = async ({
       members: {
         connect: {
           mail: session.user.email!,
+          // userId: session.user.id,
         },
       },
     },

@@ -1,9 +1,6 @@
 // import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const batchRouter = createTRPCRouter({
   getStudentBatch: protectedProcedure.query(async ({ ctx }) => {
@@ -39,5 +36,32 @@ export const batchRouter = createTRPCRouter({
     });
 
     return batches;
+  }),
+
+  getStudents: protectedProcedure.query(async ({ ctx }) => {
+    const student = await ctx.db.student.findUniqueOrThrow({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      include: {
+        batch: {
+          include: {
+            students: true,
+          },
+        },
+      },
+    });
+
+    console.log("student", student);
+
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    if (!student.batch) {
+      throw new Error("Batch not found");
+    }
+
+    return student.batch.students;
   }),
 });
