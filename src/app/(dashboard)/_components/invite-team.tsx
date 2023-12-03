@@ -1,10 +1,9 @@
 import React from "react";
-import { studentDashboardAction } from "../_actions/student";
+import { type studentDashboardAction } from "../_actions/student";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";

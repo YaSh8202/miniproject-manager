@@ -44,9 +44,12 @@ export default function StudentMultiSelect({
 
   const [inputValue, setInputValue] = React.useState("");
 
-  const handleUnselect = React.useCallback((framework: Student) => {
-    setSelected((prev) => prev.filter((s) => s.mailId !== framework.mailId));
-  }, []);
+  const handleUnselect = React.useCallback(
+    (framework: Student) => {
+      setSelected((prev) => prev.filter((s) => s.mailId !== framework.mailId));
+    },
+    [setSelected],
+  );
 
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -67,7 +70,7 @@ export default function StudentMultiSelect({
         }
       }
     },
-    [],
+    [setSelected],
   );
 
   const selectables = STUDENTS.filter((student) => !selected.includes(student));
@@ -125,7 +128,7 @@ export default function StudentMultiSelect({
                       e.preventDefault();
                       e.stopPropagation();
                     }}
-                    onSelect={(value) => {
+                    onSelect={() => {
                       setInputValue("");
                       setSelected((prev) => [...prev, student]);
                     }}

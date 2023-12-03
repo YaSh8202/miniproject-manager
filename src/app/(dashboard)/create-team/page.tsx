@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import TeamInfoForm from "./_components/team-info-form";
-import InviteMembers from "./_components/invite-members";
 
 const CrateTeamPage = () => {
   return (

@@ -9,13 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Form, FormField } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import StudentMultiSelect from "@/components/ui/multi-select";
 import React from "react";
 import CurrentTeam from "./_components/current-team";
 import { Link, Loader } from "lucide-react";
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
 import { api } from "@/trpc/react";
 import { useToast } from "@/components/ui/use-toast";
 
