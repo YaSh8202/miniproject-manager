@@ -14,7 +14,7 @@ const StudentDashboard = async () => {
     return <div>Login using the college id</div>;
   }
 
-  if (!student?.miniProject) {
+  if (!student?.batch?.miniProject) {
     return <NoMiniProjectCard />;
   }
 

@@ -16,7 +16,11 @@ export async function studentDashboardAction() {
       userId: user.id,
     },
     include: {
-      batch: true,
+      batch: {
+        include: {
+          miniProject: true,
+        },
+      },
       miniProject: true,
       team: {
         include: {
@@ -29,7 +33,6 @@ export async function studentDashboardAction() {
   if (student) {
     return student;
   }
-
 
   return null;
 }

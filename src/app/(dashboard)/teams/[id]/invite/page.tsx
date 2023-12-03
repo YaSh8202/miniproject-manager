@@ -12,7 +12,7 @@ import {
 import StudentMultiSelect from "@/components/ui/multi-select";
 import React from "react";
 import CurrentTeam from "./_components/current-team";
-import { Link, Loader } from "lucide-react";
+import { Link, Loader, Loader2 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { api } from "@/trpc/react";
 import { useToast } from "@/components/ui/use-toast";
@@ -32,7 +32,7 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
   if (isLoading) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center">
-        <Loader />
+        <Loader2 className="animate-spin w-16 h-16 " />
       </div>
     );
   }
@@ -41,7 +41,7 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
     redirect("/");
   }
 
-  const inviteLink = `${window.location.href}/teams/${params.id}/invite/${team.inviteCode}`;
+  const inviteLink = `${window.location.origin}/teams/${params.id}/invite/${team.inviteCode}`;
   console.log(inviteLink);
 
   return (

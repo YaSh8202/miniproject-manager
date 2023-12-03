@@ -21,7 +21,8 @@ export function SignInForm() {
       <CardContent className="grid gap-4">
         <div className="grid grid-cols-1">
           <Button
-            onClick={async () => {
+            onClick={async (e) => {
+              e.preventDefault();
               await signIn("google", {
                 callbackUrl: "/",
               });
