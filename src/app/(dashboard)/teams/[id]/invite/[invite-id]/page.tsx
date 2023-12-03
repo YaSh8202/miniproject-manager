@@ -10,9 +10,11 @@ const InviteMember = async ({
 }) => {
   const session = await getServerAuthSession();
 
+  console.log("params",params)
   if (!session) {
     redirect("/sign-in");
   }
+
 
   const team = await db.team.findUnique({
     where: {

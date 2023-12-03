@@ -53,7 +53,6 @@ const NewMiniProjectForm = () => {
   const { mutateAsync: newMPMutate, error: newMPError } =
     api.miniProject.create.useMutation();
 
-  console.log("batches", batches);
   async function onSubmit(values: formSchemaType) {
     try {
       await newMPMutate({

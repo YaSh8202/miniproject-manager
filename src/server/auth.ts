@@ -80,6 +80,8 @@ export const authOptions: NextAuthOptions = {
         });
         const student = await db.student.create({
           data: {
+            name: createdUser.name,
+            mail: createdUser.email,
             user: {
               connect: {
                 id: createdUser.id,

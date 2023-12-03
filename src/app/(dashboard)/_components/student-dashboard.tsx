@@ -8,7 +8,6 @@ import InviteTeamCard from "./invite-team";
 
 const StudentDashboard = async () => {
   const student = await studentDashboardAction();
-  console.log(student);
 
   if (!student) {
     return <div>Login using the college id</div>;

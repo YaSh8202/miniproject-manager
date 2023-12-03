@@ -42,7 +42,6 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
   }
 
   const inviteLink = `${window.location.origin}/teams/${params.id}/invite/${team.inviteCode}`;
-  console.log(inviteLink);
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center">

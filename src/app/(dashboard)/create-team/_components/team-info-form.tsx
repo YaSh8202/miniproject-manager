@@ -45,7 +45,6 @@ const TeamInfoForm = () => {
   });
 
   async function onSubmit(values: teamInfoFormSchemaType) {
-    console.log(values);
     const teamId = await createTeamMutation.mutateAsync({
       teamName: values.teamName,
       projectTitle: values.projectTitle,
