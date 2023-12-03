@@ -2,6 +2,7 @@
 import { createTRPCRouter } from "@/server/api/trpc";
 import { miniProjectRouter } from "./routers/miniproject";
 import { batchRouter } from "./routers/batch";
+import { teamRouter } from "./routers/team";
 
 /**
  * This is the primary router for your server.
@@ -10,7 +11,8 @@ import { batchRouter } from "./routers/batch";
  */
 export const appRouter = createTRPCRouter({
   miniProject: miniProjectRouter,
-  batch: batchRouter
+  batch: batchRouter,
+  team: teamRouter
 });
 
 // export type definition of API

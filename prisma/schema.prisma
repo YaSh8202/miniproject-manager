@@ -55,11 +55,11 @@ model User {
 }
 
 model Mentor {
-    id            String          @id @default(cuid())
-    user          User?           @relation(fields: [userId], references: [id])
-    userId        String?         @unique
-    coordinator   Batch[]
-    assignedTeam  Team[]          @relation("MentorAssignedToTeam")
+    id           String  @id @default(cuid())
+    user         User?   @relation(fields: [userId], references: [id])
+    userId       String? @unique
+    coordinator  Batch[]
+    assignedTeam Team[]  @relation("MentorAssignedToTeam")
 
     department   Department? @relation(fields: [departmentId], references: [id])
     departmentId String?
@@ -105,6 +105,7 @@ model MiniProject {
     createdBy          User?     @relation(fields: [createdById], references: [id])
     createdById        String?
     lastDateToRegister DateTime?
+    active             Boolean   @default(true)
 
     batch    Batch?
     students Student[]
@@ -135,17 +136,18 @@ model Batch {
 model Team {
     id            String      @id @default(cuid())
     name          String?
+    projectTitle  String?
+    projectDesc   String?
     miniProject   MiniProject @relation(fields: [miniProjectId], references: [id])
     miniProjectId String
     members       Student[]
 
     mentorList       String[]
-    assignedMentor   Mentor?         @relation("MentorAssignedToTeam", fields: [assignedMentorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    assignedMentor   Mentor?  @relation("MentorAssignedToTeam", fields: [assignedMentorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     assignedMentorId String?
-    createdAt        DateTime        @default(now())
-    updatedAt        DateTime        @updatedAt
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
 }
-
 
 enum Role {
     ADMIN

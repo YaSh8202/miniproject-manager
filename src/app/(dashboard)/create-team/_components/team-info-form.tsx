@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -36,13 +37,22 @@ type teamInfoFormSchemaType = z.infer<typeof teamInfoFormSchema>;
 
 const TeamInfoForm = () => {
   const router = useRouter();
+  const createTeamMutation = api.team.create.useMutation();
+  
 
   const form = useForm<teamInfoFormSchemaType>({
     resolver: zodResolver(teamInfoFormSchema),
   });
 
-  function onSubmit(values: teamInfoFormSchemaType) {
+  async function onSubmit(values: teamInfoFormSchemaType) {
     console.log(values);
+    const teamId = await createTeamMutation.mutateAsync({
+      teamName: values.teamName,
+      projectTitle: values.projectTitle,
+      projectDesc: values.projectDescription,
+    });
+
+    router.push(`/teams/${teamId}/invite`);
   }
 
   return (
@@ -58,7 +68,7 @@ const TeamInfoForm = () => {
             <FormItem>
               <FormLabel>Team Name *</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input autoFocus {...field} />
               </FormControl>
               <FormDescription>
                 Choose a unique and creative name for your team.

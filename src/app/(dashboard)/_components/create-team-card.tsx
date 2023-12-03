@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 import React from "react";
 
 const CreateTeamCard = () => {
@@ -20,7 +21,9 @@ const CreateTeamCard = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex gap-3">
-        <Button>Create Team</Button>
+        <Link href="/create-team" className={buttonVariants()}>
+          Create Team
+        </Link>
         <Button>Join Team</Button>
       </CardContent>
     </Card>

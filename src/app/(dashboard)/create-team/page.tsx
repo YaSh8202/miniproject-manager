@@ -22,8 +22,7 @@ const CrateTeamPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* <TeamInfoForm /> */}
-          <InviteMembers />
+          <TeamInfoForm />
         </CardContent>
       </Card>
     </div>
