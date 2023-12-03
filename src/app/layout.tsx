@@ -7,6 +7,7 @@ import { TRPCReactProvider } from "@/trpc/react";
 import SessionProvider from "@/components/providers/session-provider";
 import { getSession } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,19 +29,19 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        <TRPCReactProvider headers={headers()}>
-          <SessionProvider session={session}>
+        <SessionProvider session={session}>
+          <TRPCReactProvider headers={headers()}>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
               enableSystem
               disableTransitionOnChange
             >
-              {children}
+              <TooltipProvider>{children}</TooltipProvider>
               <Toaster />
             </ThemeProvider>
-          </SessionProvider>
-        </TRPCReactProvider>
+          </TRPCReactProvider>
+        </SessionProvider>
       </body>
     </html>
   );

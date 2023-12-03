@@ -18,7 +18,11 @@ export async function studentDashboardAction() {
     include: {
       batch: true,
       miniProject: true,
-      team: true,
+      team: {
+        include: {
+          members: true,
+        },
+      },
     },
   });
 
@@ -26,24 +30,6 @@ export async function studentDashboardAction() {
     return student;
   }
 
-  // const mentor = await db.mentor.findUnique({
-  //   where: {
-  //     userId: user.id,
-  //   },
-  //   include: {
-  //     assignedTeam: true,
-  //     coordinator: true,
-  //   },
-  // });
-
-  // if (mentor) {
-  //   return {
-  //     data: {
-  //       mentor: mentor,
-  //     },
-  //     status: "success",
-  //   };
-  // }
 
   return null;
 }

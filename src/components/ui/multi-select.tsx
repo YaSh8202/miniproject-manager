@@ -32,10 +32,16 @@ const STUDENTS = [
   },
 ] satisfies Student[];
 
-export function FancyMultiSelect() {
+export default function StudentMultiSelect({
+  selected,
+  setSelected,
+}: {
+  selected: Student[];
+  setSelected: React.Dispatch<React.SetStateAction<Student[]>>;
+}) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<Student[]>([]);
+
   const [inputValue, setInputValue] = React.useState("");
 
   const handleUnselect = React.useCallback((framework: Student) => {
@@ -129,7 +135,7 @@ export function FancyMultiSelect() {
                     disabled={!student.available}
                   >
                     <span>{student.mailId}</span>
-                    <Badge variant="secondary" >
+                    <Badge variant="secondary">
                       {student.available ? "Available" : "Not Available"}
                     </Badge>
                   </CommandItem>

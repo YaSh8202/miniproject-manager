@@ -58,4 +58,24 @@ export const teamRouter = createTRPCRouter({
 
       return team.id;
     }),
+
+  get: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const team = await ctx.db.team.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!team) {
+        throw new Error("Team not found");
+      }
+
+      return team;
+    }),
 });
