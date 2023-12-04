@@ -1,5 +1,5 @@
 import React from "react";
-import { type studentDashboardAction } from "../_actions/student";
+import { type studentDashboardAction } from "../../_actions/student";
 import {
   Card,
   CardContent,

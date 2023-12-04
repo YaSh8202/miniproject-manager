@@ -1,6 +1,6 @@
 import { getServerAuthSession } from "@/server/auth";
 import { redirect } from "next/navigation";
-import StudentDashboard from "./_components/student-dashboard";
+import StudentDashboard from "./_components/student/student-dashboard";
 
 export default async function Home() {
   // const hello = await api.post.hello.query({ text: "from tRPC" });

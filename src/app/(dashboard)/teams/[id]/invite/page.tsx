@@ -16,6 +16,7 @@ import { Link, Loader2 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { api } from "@/trpc/react";
 import { useToast } from "@/components/ui/use-toast";
+import { useMutation } from "@tanstack/react-query";
 
 type Student = {
   mailId: string;
@@ -26,6 +27,55 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
   const [selected, setSelected] = React.useState<Student[]>([]);
   const { data: students, isLoading: isLoadingStudents } =
     api.batch.getStudents.useQuery();
+  const { data: team, isLoading } = api.team.get.useQuery({
+    id: params.id,
+  });
+  const { toast } = useToast();
+  const inviteStudentMutation = useMutation({
+    mutationFn: ({
+      teamName,
+      inviteLink,
+      inviteeEmail,
+    }: {
+      teamName: string;
+      inviteLink: string;
+      inviteeEmail: string;
+    }) => {
+      return fetch("/api/send-mail/invite-to-team", {
+        method: "POST",
+        body: JSON.stringify({
+          teamName,
+          inviteLink,
+          inviteeEmail,
+        }),
+      });
+    },
+  });
+
+  const inviteHandler = async () => {
+    if (!team) return;
+
+    const teamName = team.name!;
+    const inviteLink = `${window.location.origin}/teams/${params.id}/invite/${team.inviteCode}`;
+
+    for (const student of selected) {
+      if (!student.available) continue;
+
+      await inviteStudentMutation.mutateAsync({
+        teamName,
+        inviteLink,
+        inviteeEmail: student.mailId,
+      });
+    }
+
+    toast({
+      title: "Invited successfully",
+      description: "The students have been invited to your team",
+      duration: 2000,
+    });
+
+    setSelected([]);
+  };
 
   const studentOptions = useMemo(() => {
     if (!students) return [];
@@ -35,11 +85,6 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
       available: !student.teamId,
     })) satisfies Student[];
   }, [students]);
-
-  const { data: team, isLoading } = api.team.get.useQuery({
-    id: params.id,
-  });
-  const { toast } = useToast();
 
   if (isLoading || isLoadingStudents) {
     return (
@@ -71,6 +116,7 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
             options={studentOptions}
             selected={selected}
             setSelected={setSelected}
+            disabled={selected.length >= 5 || inviteStudentMutation.isLoading }
           />
           <Button
             onClick={async () => {
@@ -91,7 +137,9 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
         </CardContent>
 
         <CardFooter>
-          <Button disabled={selected.length === 0}>Invite to team</Button>
+          <Button onClick={inviteHandler} disabled={selected.length === 0}>
+            Invite to team
+          </Button>
           <Button className="ml-2" variant={"ghost"}>
             I&apos;ll do this later
           </Button>

@@ -18,10 +18,12 @@ export default function StudentMultiSelect({
   selected,
   setSelected,
   options,
+  disabled
 }: {
   selected: Student[];
   setSelected: React.Dispatch<React.SetStateAction<Student[]>>;
   options: Student[];
+  disabled?: boolean;
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -97,6 +99,7 @@ export default function StudentMultiSelect({
             onFocus={() => setOpen(true)}
             placeholder="Select Batchmates..."
             className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
+            disabled={disabled}
           />
         </div>
       </div>

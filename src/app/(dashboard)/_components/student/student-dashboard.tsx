@@ -1,5 +1,5 @@
 import React from "react";
-import { studentDashboardAction } from "../_actions/student";
+import { studentDashboardAction } from "../../_actions/student";
 import NoMiniProjectCard from "./no-miniproject-card";
 import CreateTeamCard from "./create-team-card";
 import InviteTeamCard from "./invite-team";
