@@ -19,11 +19,11 @@ export const teamRouter = createTRPCRouter({
           userId: ctx.session.user.id,
         },
         select: {
-          miniProject: {
+          batch: {
             select: {
-              id: true,
+              miniProject: true,
             },
-          },
+          }
         },
       });
 
@@ -31,11 +31,15 @@ export const teamRouter = createTRPCRouter({
         throw new Error("Student not found");
       }
 
-      if (!student.miniProject) {
+      if (!student.batch) {
+        throw new Error("Student has no batch");
+      }
+
+      if (!student.batch.miniProject) {
         throw new Error("Student has no mini project");
       }
 
-      const miniProjectId = student.miniProject.id;
+      const miniProjectId = student.batch.miniProject.id;
 
       const team = await ctx.db.team.create({
         data: {
@@ -69,6 +73,9 @@ export const teamRouter = createTRPCRouter({
       const team = await ctx.db.team.findUnique({
         where: {
           id: input.id,
+        },
+        include: {
+          members: true,
         },
       });
 

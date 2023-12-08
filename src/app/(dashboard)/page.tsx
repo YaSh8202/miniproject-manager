@@ -11,7 +11,7 @@ export default async function Home() {
   }
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center">
+    <main className="flex flex-1 flex-col items-center justify-center gap-4">
       {session.user?.role === "STUDENT" && <StudentDashboard />}
       
     </main>

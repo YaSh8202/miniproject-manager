@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,11 +12,13 @@ import {
 import StudentMultiSelect from "@/components/ui/multi-select";
 import React, { useMemo } from "react";
 import CurrentTeam from "./_components/current-team";
-import { Link, Loader2 } from "lucide-react";
+import { Link as LinkIcon, Loader2 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { api } from "@/trpc/react";
 import { useToast } from "@/components/ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 type Student = {
   mailId: string;
@@ -80,11 +82,17 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
   const studentOptions = useMemo(() => {
     if (!students) return [];
 
-    return students?.map((student) => ({
-      mailId: student.mail!,
-      available: !student.teamId,
-    })) satisfies Student[];
-  }, [students]);
+    return students
+      ?.filter((student) => {
+        const members = team?.members ?? [];
+        console.log(members);
+        return !members.some((member) => member.mail === student.mail);
+      })
+      .map((student) => ({
+        mailId: student.mail!,
+        available: !student.teamId,
+      })) satisfies Student[];
+  }, [students, team?.members]);
 
   if (isLoading || isLoadingStudents) {
     return (
@@ -116,7 +124,7 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
             options={studentOptions}
             selected={selected}
             setSelected={setSelected}
-            disabled={selected.length >= 5 || inviteStudentMutation.isLoading }
+            disabled={selected.length >= 5 || inviteStudentMutation.isLoading}
           />
           <Button
             onClick={async () => {
@@ -131,7 +139,7 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
             className="ml-auto"
             variant={"ghost"}
           >
-            <Link size={16} className="mr-1" />
+            <LinkIcon size={16} className="mr-1" />
             Invite with link
           </Button>
         </CardContent>
@@ -140,9 +148,9 @@ const InviteTeam = ({ params }: { params: { id: string } }) => {
           <Button onClick={inviteHandler} disabled={selected.length === 0}>
             Invite to team
           </Button>
-          <Button className="ml-2" variant={"ghost"}>
+          <Link className={cn(buttonVariants({variant: "ghost"}), "ml-2")} href={`/`} >
             I&apos;ll do this later
-          </Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>

@@ -11,6 +11,7 @@ export function extractCollegeInfo(
   if (!email) return null;
 
   const emailPattern = /^(\d{2})([a-z])([a-z]{2})(\d{3})@smvdu\.ac\.in$/;
+  // /^(\d{2})([a-z])([a-z])([a-z]){2}(\d{3})@
 
   // Check if the email has the domain "smvdu.ac.in"
   if (!email.endsWith("@smvdu.ac.in")) {
