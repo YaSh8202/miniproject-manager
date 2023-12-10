@@ -54,11 +54,42 @@ export const authOptions: NextAuthOptions = {
   adapter: {
     ...PrismaAdapter(db),
     createUser: async (user) => {
+
+      const mentor = await db.mentor.findUnique({
+        where: {
+          email: user.email
+        }
+      });
+
+      if(mentor){
+        const createUser = await db.user.create({
+          data: {
+            ...user,
+            role: "MENTOR",
+            mentor: {
+              connect: {
+                id: mentor.id
+              }
+            }
+          },
+
+        })
+        
+
+        return createUser as AdapterUser;
+      }
+
+
+
       const createdUser = await db.user.create({
         data: user,
+        // role: 
+        
       });
 
       console.log("createdUser", createdUser);
+
+
 
       const email = createdUser.email;
       const studentInfo = extractCollegeInfo(email);
@@ -98,6 +129,8 @@ export const authOptions: NextAuthOptions = {
 
         console.log("student",student)
       }
+
+      
 
       return createdUser as AdapterUser;
     },
