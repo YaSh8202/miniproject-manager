@@ -94,7 +94,6 @@ model Department {
     code           String   @unique
     mentors        Mentor[]
     batches        Batch[]
-    allMentorsMail String[]
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
 }

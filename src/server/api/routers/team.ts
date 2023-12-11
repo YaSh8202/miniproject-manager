@@ -22,10 +22,17 @@ export const teamRouter = createTRPCRouter({
           batch: {
             select: {
               miniProject: true,
+              department: {
+                select: {
+                  mentors: true,
+                },
+              },
             },
-          }
+          },
         },
       });
+
+      console.log(student);
 
       if (!student) {
         throw new Error("Student not found");
@@ -40,6 +47,15 @@ export const teamRouter = createTRPCRouter({
       }
 
       const miniProjectId = student.batch.miniProject.id;
+      const mentors = student.batch.department.mentors;
+
+      const order = mentors.map((mentor) => mentor.id);
+
+      // const mentorList = await ctx.db.mentorList.create({
+
+      // })
+
+      // const departmentMentors = await ctx.db.student
 
       const team = await ctx.db.team.create({
         data: {
@@ -55,6 +71,11 @@ export const teamRouter = createTRPCRouter({
           miniProject: {
             connect: {
               id: miniProjectId,
+            },
+          },
+          mentorList: {
+            create: {
+              order: order,
             },
           },
         },
@@ -84,5 +105,118 @@ export const teamRouter = createTRPCRouter({
       }
 
       return team;
+    }),
+
+  getMentorList: protectedProcedure
+    .input(z.object({}))
+    .query(async ({ ctx }) => {
+      const student = await ctx.db.student.findUnique({
+        where: {
+          userId: ctx.session.user.id,
+        },
+        select: {
+          team: {
+            include: {
+              mentorList: true,
+            },
+          },
+          batch: {
+            include: {
+              department: {
+                include: {
+                  mentors: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!student) {
+        throw new Error("Student not found");
+      }
+
+      if (!student.team) {
+        throw new Error("Student has no team");
+      }
+
+      const mentors = student.batch?.department.mentors;
+
+      if (!mentors) {
+        throw new Error("Student's department has no mentors");
+      }
+
+      const mentorOrder = student.team.mentorList?.order.map((mentorId) => {
+        const mentor = mentors.find((mentor) => mentor.id === mentorId);
+
+        if (!mentor) {
+          throw new Error("Mentor not found");
+        }
+
+        return mentor;
+      });
+
+      return mentorOrder;
+    }),
+
+  updateMentorList: protectedProcedure
+    .input(
+      z.object({
+        mentorList: z.array(z.string()),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const student = await ctx.db.student.findUnique({
+        where: {
+          userId: ctx.session.user.id,
+        },
+        select: {
+          teamId: true,
+          batch: {
+            include: {
+              department: {
+                include: {
+                  mentors: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!student) {
+        throw new Error("Student not found");
+      }
+
+      if (!student.teamId) {
+        throw new Error("Student has no team");
+      }
+
+      const mentors = student.batch?.department.mentors;
+
+      if (!mentors) {
+        throw new Error("Student's department has no mentors");
+      }
+
+      const mentorOrder = input.mentorList.map((mentorId) => {
+        const mentor = mentors.find((mentor) => mentor.id === mentorId);
+
+        if (!mentor) {
+          throw new Error("Mentor not found");
+        }
+
+        return mentor;
+      });
+
+      await ctx.db.mentorList.update({
+        where: {
+          teamId: student.teamId,
+        },
+        data: {
+          order: input.mentorList,
+        },
+      });
+
+      return mentorOrder;
     }),
 });
