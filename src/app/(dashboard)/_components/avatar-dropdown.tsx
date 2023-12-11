@@ -10,17 +10,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { type Session } from "next-auth";
 
-function AvatarDropdownMenu() {
+function AvatarDropdownMenu({ session }: { session: Session }) {
   const logoutHandler = async () => {
     await signOut();
   };
-  const { data: session } = useSession();
-
-  if (!session?.user) return null;
 
   return (
-    <DropdownMenu  >
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         {/* <Button variant={"outline"} className="p-0 cursor-pointer" asChild > */}
         <Avatar className="h-8 w-8 cursor-pointer ">
@@ -57,12 +55,14 @@ function AvatarDropdownMenu() {
           </Avatar>
           <div className="flex flex-col">
             <p>{session.user.name}</p>
-            <p className="text-xs text-muted-foreground">{session.user.email}</p>
+            <p className="text-xs text-muted-foreground">
+              {session.user.email}
+            </p>
           </div>
         </DropdownMenuGroup>
 
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild className="px-8 cursor-pointer">
+          <DropdownMenuItem asChild className="cursor-pointer px-8">
             <Link href={"/profile"}>Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem

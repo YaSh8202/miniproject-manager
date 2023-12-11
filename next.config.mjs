@@ -8,7 +8,8 @@ await import("./src/env.mjs");
 const config = {
   experimental: {
     serverActions: true
-  }
+  },
+  reactStrictMode: false
 };
 
 export default config;
