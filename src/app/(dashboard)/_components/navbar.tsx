@@ -1,8 +1,13 @@
 import { ModeToggle } from "@/components/theme-mode-toggle";
 import Link from "next/link";
 import AvatarDropdownMenu from "./avatar-dropdown";
+import { getServerAuthSession } from "@/server/auth";
+import { redirect } from "next/navigation";
 
-function Navbar() {
+async function Navbar() {
+  const session = await getServerAuthSession();
+
+  if (!session) redirect("/sign-in");
 
   return (
     <div className="border-b">
@@ -12,7 +17,7 @@ function Navbar() {
         </Link>
         <div className="ml-auto flex items-center space-x-4">
           <ModeToggle />
-          <AvatarDropdownMenu />
+          <AvatarDropdownMenu session={session} />
         </div>
       </div>
     </div>

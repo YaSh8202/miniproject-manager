@@ -1,6 +1,4 @@
 import "@/styles/globals.css";
-
-import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { TRPCReactProvider } from "@/trpc/react";
@@ -8,11 +6,8 @@ import SessionProvider from "@/components/providers/session-provider";
 import { getSession } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { GeistSans } from "geist/font/sans";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
 
 export const metadata = {
   title: "Mini Project Manager",
@@ -27,8 +22,11 @@ export default async function RootLayout({
 }) {
   const session = await getSession();
   return (
-    <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
+    <html   lang="en">
+      <body
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+className={GeistSans.className}
+      >
         <SessionProvider session={session}>
           <TRPCReactProvider headers={headers()}>
             <ThemeProvider
