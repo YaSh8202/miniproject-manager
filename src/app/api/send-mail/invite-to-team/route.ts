@@ -10,7 +10,7 @@ type Data = {
   teamName: string;
   inviterName: string;
   inviteLink: string;
-  inviteeEmail: string;
+  inviteeEmails: string[];
 };
 
 export async function POST(request: Request) {
@@ -24,15 +24,14 @@ export async function POST(request: Request) {
 
   const inviterName = session.user.name!;
 
-  console.log("data", data)
+  console.log("data", data);
 
   try {
-    const res = await resend.emails.send({
+    await resend.emails.send({
       from: `MiniProjectManager <invite@updates.yashbajaj.me>`,
-      to: [data.inviteeEmail],
+      to: data.inviteeEmails,
       subject: "You have been invited to a team",
       react: EmailTemplate({
-        inviteeEmail: data.inviteeEmail,
         teamName: data.teamName,
         inviterName: inviterName,
         inviteLink: data.inviteLink,
@@ -40,7 +39,7 @@ export async function POST(request: Request) {
       text: "",
     });
 
-    return NextResponse.json(res);
+    return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error });
   }

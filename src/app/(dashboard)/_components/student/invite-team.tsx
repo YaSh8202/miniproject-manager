@@ -15,9 +15,7 @@ type Student = Awaited<ReturnType<typeof studentDashboardAction>>;
 type Team = NonNullable<Pick<NonNullable<Student>, "team">["team"]>;
 
 const InviteTeamCard = ({ team }: { team: Team }) => {
-  
-  
-  const membersNeeded = 3 - team.members.length
+  const membersNeeded = 3 - team.members.length;
 
   return (
     <Card>
@@ -27,7 +25,14 @@ const InviteTeamCard = ({ team }: { team: Team }) => {
           You need to invite {membersNeeded} more members to complete your team.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex items-center gap-3">
+        <Link
+          className={`${buttonVariants({ variant: "secondary" })} `}
+          href={`/teams/${team.id}`}
+        >
+          View Team
+        </Link>
+
         <Link
           className={`${buttonVariants()} `}
           href={`/teams/${team.id}/invite/`}
