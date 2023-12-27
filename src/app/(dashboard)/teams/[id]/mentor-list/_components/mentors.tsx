@@ -15,9 +15,10 @@ import { useRouter } from "next/navigation";
 
 interface CardProps {
   mentorOrder: Mentor[];
+  id: string;
 }
 
-function MentorsList({ mentorOrder }: CardProps) {
+function MentorsList({ mentorOrder, id }: CardProps) {
   const [mentors, setMentors] = useState(mentorOrder);
   const updateMentorsMutation = api.team.updateMentorList.useMutation({
     onSuccess: (data) => {
@@ -37,10 +38,11 @@ function MentorsList({ mentorOrder }: CardProps) {
     setMentors(items);
   };
 
-  const handleSave = () => {
-    updateMentorsMutation.mutate({
+  const handleSave = async () => {
+    await updateMentorsMutation.mutateAsync({
       mentorList: mentors.map((mentor) => mentor.id),
     });
+    router.push(`/teams/${id}`);
   };
 
   return (
@@ -49,7 +51,7 @@ function MentorsList({ mentorOrder }: CardProps) {
         <Droppable droppableId="mentors">
           {(provided) => (
             <ul
-              className="scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted-foreground scrollbar-track-secondary flex max-h-[65vh] flex-col overflow-auto "
+              className="scrollbar-thumb-rounded-md flex max-h-[65vh] flex-col overflow-auto scrollbar-thin scrollbar-track-secondary scrollbar-thumb-muted-foreground "
               {...provided.droppableProps}
               ref={provided.innerRef}
             >

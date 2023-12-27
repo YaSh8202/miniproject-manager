@@ -1,11 +1,17 @@
+import { getServerAuthSession } from "@/server/auth";
 import Navbar from "./_components/navbar";
+import { redirect } from "next/navigation";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // const hello = await api.post.hello.query({ text: "from tRPC" });
+  const session = await getServerAuthSession();
+
+  if (!session) {
+    redirect("/sign-in");
+  }
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden  ">

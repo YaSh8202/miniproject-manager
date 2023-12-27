@@ -96,7 +96,11 @@ export const teamRouter = createTRPCRouter({
           id: input.id,
         },
         include: {
-          members: true,
+          members: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
 
@@ -218,5 +222,45 @@ export const teamRouter = createTRPCRouter({
       });
 
       return mentorOrder;
+    }),
+
+  submitTeam: protectedProcedure
+    .input(
+      z.object({
+        teamId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const team = await ctx.db.team.findUnique({
+        where: {
+          id: input.teamId,
+        },
+        include: {
+          members: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+
+      if (!team) {
+        throw new Error("Team not found");
+      }
+
+      if (team.members.length < 3) {
+        throw new Error("Team has less than 3 members");
+      }
+
+      const updatedTeam = await ctx.db.team.update({
+        where: {
+          id: input.teamId,
+        },
+        data: {
+          submittedAt: new Date(),
+        },
+      });
+
+      return updatedTeam;
     }),
 });

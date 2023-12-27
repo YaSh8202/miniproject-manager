@@ -8,7 +8,6 @@ generator client {
     provider = "prisma-client-js"
 }
 
-
 model Account {
     id                String  @id @default(cuid())
     userId            String
@@ -89,13 +88,13 @@ model VerificationToken {
 }
 
 model Department {
-    id             String   @id @default(cuid())
-    name           String
-    code           String   @unique
-    mentors        Mentor[]
-    batches        Batch[]
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
+    id        String   @id @default(cuid())
+    name      String
+    code      String   @unique
+    mentors   Mentor[]
+    batches   Batch[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model MiniProject {
@@ -142,11 +141,10 @@ model Team {
     miniProject   MiniProject @relation(fields: [miniProjectId], references: [id])
     miniProjectId String
     members       Student[]
-
-    // mentorList       String[]
     mentorList       MentorList?
     assignedMentor   Mentor?     @relation("MentorAssignedToTeam", fields: [assignedMentorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     assignedMentorId String?
+    submittedAt      DateTime?
     createdAt        DateTime    @default(now())
     updatedAt        DateTime    @updatedAt
 }

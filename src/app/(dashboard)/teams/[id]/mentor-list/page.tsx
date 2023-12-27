@@ -2,12 +2,16 @@ import { api } from "@/trpc/server";
 import React from "react";
 import MentorsList from "./_components/mentors";
 
-export default async function MentorListPage() {
+export default async function MentorListPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const mentorOrder = await api.team.getMentorList.query({});
 
   return (
     <div className="flex h-[calc(100vh-16px)] w-full flex-grow flex-col items-center ">
-      <div className="w-[32rem] border-none flex flex-col flex-1 overflow-hidden">
+      <div className="flex w-[32rem] flex-1 flex-col overflow-hidden border-none">
         <div className="my-4">
           <h2 className="mb-1 text-3xl font-bold">Mentor list</h2>
           <p className="text-muted-foreground">
@@ -24,7 +28,7 @@ export default async function MentorListPage() {
               <div className="mt-4 text-lg font-semibold">No mentors yet</div>
             </div>
           ) : (
-            <MentorsList mentorOrder={mentorOrder} />
+            <MentorsList mentorOrder={mentorOrder} id={params.id} />
           )}
         </div>
       </div>
