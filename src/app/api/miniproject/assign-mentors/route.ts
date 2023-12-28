@@ -1,3 +1,4 @@
+import { env } from "@/env.mjs";
 import { db } from "@/server/db";
 import { type Team } from "@prisma/client";
 
@@ -5,6 +6,9 @@ type Data = {
   miniProjectId: string;
   token: string;
 };
+const baseUrl = env.VERCEL_URL
+  ? `https://${env.VERCEL_URL}`
+  : "http://localhost:3000";
 
 async function assignMentor(
   team: Pick<Team, "id" | "name" | "submittedAt">,
@@ -65,6 +69,13 @@ export async function POST(request: Request) {
           name: true,
           submittedAt: true,
           mentorList: true,
+          members: {
+            select: {
+              id: true,
+              name: true,
+              mail: true,
+            },
+          },
         },
       },
       batch: {
@@ -74,6 +85,8 @@ export async function POST(request: Request) {
               mentors: {
                 select: {
                   id: true,
+                  name: true,
+                  email: true,
                 },
               },
             },
@@ -87,7 +100,6 @@ export async function POST(request: Request) {
     return new Response("Invalid request");
   }
 
-  console.log("miniProject", JSON.stringify(miniProject));
 
   const sortedTeams = miniProject.teams.sort((a, b) => {
     if (a.submittedAt && b.submittedAt) {
@@ -101,12 +113,10 @@ export async function POST(request: Request) {
     }
   });
 
-  console.log("sortedTeams", JSON.stringify(sortedTeams, null, 2));
   const maxTeamsPerMentor = Math.ceil(
     sortedTeams.length / (miniProject?.batch?.department.mentors.length ?? 1),
   );
 
-  console.log("maxTeamsPerMentor", maxTeamsPerMentor);
 
   for (const team of sortedTeams) {
     if (!team?.mentorList) {
@@ -115,9 +125,29 @@ export async function POST(request: Request) {
     let assigned = false;
 
     for (const mentor of team.mentorList.order) {
-      if (assigned) break;
-
       assigned = await assignMentor(team, mentor, maxTeamsPerMentor);
+
+      if (assigned) {
+        const mentorData = miniProject?.batch?.department.mentors.find(
+          (m) => m.id === mentor,
+        )
+        const res = await fetch(`${baseUrl}/api/send-mail/team-mentor`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            team: team,
+            mentor: mentorData,
+          }),
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const data = await res.json();
+        console.log("data", data);
+
+        break;
+      }
     }
   }
 
